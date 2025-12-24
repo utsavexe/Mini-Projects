@@ -1,0 +1,479 @@
+<!-- /calculator/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Scientific Calculator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#ffffff" />
+
+
+  <style>
+    /* make sizing include padding/border to avoid layout overflow */
+    *, *::before, *::after { box-sizing: border-box; }
+    :root {
+      --bg: #f2f2f2;
+      --card: #ffffff;
+      --text: #000;
+      --btn: #ffe680;
+      --op: #ffb3b3;
+      --func: #cce6ff;
+    }
+
+    [data-theme="dark"] {
+      --bg: #121212;
+      --card: #1e1e1e;
+      --text: #fff;
+      --btn: #444;
+      --op: #663333;
+      --func: #335577;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+
+    }
+
+    .app {
+      display: flex;
+      gap: 16px;
+    }
+
+    .calculator, .history {
+      background: var(--card);
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.2);
+      padding: 16px;
+    }
+
+    .calculator { width: 360px; }
+    .calculator { max-width: 100%; box-sizing: border-box; }
+    .history { width: 260px; display: flex; flex-direction: column; }
+
+    .top {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .top-controls {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .top-controls button {
+      height: 36px;
+      padding: 6px 10px;
+      border-radius: 8px;
+      background: transparent;
+      border: 1px solid rgba(0,0,0,.08);
+      cursor: pointer;
+    }
+
+    .history.hidden { display: none; }
+
+    .display {
+      width: 100%;
+      max-width: 100%;
+      height: 60px;
+      font-size: 16px; /* prevents iOS zoom */
+      text-align: right;
+      padding: 8px;
+      border: none;
+      background: #eaeaea;
+      border-radius: 8px;
+      margin-bottom: 12px;
+      overflow-x: auto;
+      white-space: nowrap;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .keys {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+    }
+
+    button {
+  height: 56px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  background: var(--btn);
+  color: var(--text);
+  font-size: 1.1rem;
+  font-weight: 500;
+  box-shadow: 0 2px 4px rgba(0,0,0,.25);
+  transition: transform .05s ease, box-shadow .05s ease;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-user-select: none;
+      user-select: none;
+      touch-action: manipulation;
+}
+
+button:active {
+  transform: scale(0.97);
+  box-shadow: 0 1px 2px rgba(0,0,0,.4);
+}
+
+.operator { background: #8b3a3a; }
+.func { background: #2f5f8f; }
+.clear { background: #d9534f; }
+.equal {
+  background: #4caf50;
+  font-size: 1.3rem;
+}
+
+
+    .operator { background: var(--op); }
+    .func { background: var(--func); }
+    .equal { grid-column: span 5; background: #9fdf9f; }
+    .clear { background: #ff6666; color: white; }
+
+    .history h3 {
+      margin: 0 0 8px;
+      text-align: center;
+    }
+
+    .history-list {
+      flex: 1;
+      overflow-y: auto;
+      font-size: 0.85rem;
+    }
+
+    .history-item {
+      padding: 6px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .history-item:hover { background: rgba(0,0,0,.1); }
+@media (max-width: 768px) {
+  body {
+    align-items: flex-start;
+    padding: 12px;
+    height: auto;
+  }
+
+  .app {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .calculator,
+  .history {
+    width: 100%;
+  }
+
+  .calculator {
+    margin-bottom: 12px;
+  }
+}
+@media (max-width: 768px) {
+  body {
+    display: block;
+    padding: 10px;
+  }
+
+  .app {
+    display: block;
+  }
+
+  .calculator,
+  .history {
+    width: 100%;
+  }
+}
+
+/* === MOBILE TOUCH FIX (CRITICAL) === */
+* {
+  pointer-events: auto !important;
+  touch-action: manipulation;
+}
+
+/* FIX 3: prevent overlay blocking button clicks */
+.calculator {
+  position: relative;
+  z-index: 2;
+}
+
+.history {
+  position: relative;
+  z-index: 1;
+}
+/* STEP 4: FORCE BUTTONS TO ACCEPT TOUCH */
+button {
+  pointer-events: auto !important;
+  position: relative;
+  z-index: 5;
+}
+</style>
+</head>
+
+<body data-theme="light">
+  <div class="app">
+    <div class="calculator">
+      <div class="top">
+        <strong>Calculator</strong>
+        <div class="top-controls">
+          <button type="button" id="historyToggle" onclick="toggleHistory()">History</button>
+          <button type="button" onclick="toggleTheme()">🌗</button>
+        </div>
+      </div>
+
+      <input
+  id="display"
+  class="display"
+  type="text"
+  inputmode="decimal"
+  autocomplete="off"
+  autocorrect="off"
+  spellcheck="false"
+/>
+
+
+      <div class="keys">
+        <button class="clear" onclick="clearDisplay()">C</button>
+        <button onclick="append('(')">(</button>
+        <button onclick="append(')')">)</button>
+        <button class="func" onclick="append('Math.PI')">π</button>
+        <button class="operator" onclick="append('/')">÷</button>
+
+        <button class="func" onclick="append('Math.sin(')">sin</button>
+        <button class="func" onclick="append('Math.cos(')">cos</button>
+        <button class="func" onclick="append('Math.tan(')">tan</button>
+        <button class="func" onclick="append('Math.sqrt(')">√</button>
+        <button class="operator" onclick="append('*')">×</button>
+
+        <button onclick="append('7')">7</button>
+        <button onclick="append('8')">8</button>
+        <button onclick="append('9')">9</button>
+        <button onclick="append('%')">%</button>
+        <button class="operator" onclick="append('-')">−</button>
+
+        <button onclick="append('4')">4</button>
+        <button onclick="append('5')">5</button>
+        <button onclick="append('6')">6</button>
+        <button onclick="append('.')">.</button>
+        <button class="operator" onclick="append('+')">+</button>
+
+        <button onclick="append('1')">1</button>
+        <button onclick="append('2')">2</button>
+        <button onclick="append('3')">3</button>
+        <button onclick="backspace()">⌫</button>
+        <button onclick="append('0')">0</button>
+
+        <button class="equal" onclick="calculate()">=</button>
+      </div>
+    </div>
+
+    <div class="history">
+  <h3>History</h3>
+
+  <!-- 🔽 ADD THIS BLOCK -->
+  <div class="history-actions">
+    <button onclick="clearHistory()">Clear History</button>
+  </div>
+  <!-- 🔼 END -->
+
+  <div id="historyList" class="history-list"></div>
+</div>
+
+  </div>
+
+<script>
+  const display = document.getElementById("display");
+  display.addEventListener("input", () => {
+    display.value = display.value.replace(/[^0-9+\-*/().%]/g, "");
+  });
+  const historyList = document.getElementById("historyList");
+  const STORAGE = "calc-history";
+  const THEME = "calc-theme";
+
+  let history = JSON.parse(localStorage.getItem(STORAGE)) || [];
+
+  /* ===== BASIC FUNCTIONS ===== */
+  function append(v) {
+    display.value += v;
+  }
+
+  function clearDisplay() {
+    display.value = "";
+  }
+
+  function backspace() {
+    display.value = display.value.slice(0, -1);
+  }
+
+  function calculate() {
+    try {
+      const expr = display.value;
+      const result = Function(`return (${expr})`)();
+      display.value = result;
+
+      history.unshift({ expr, result });
+      history = history.slice(0, 50);
+      localStorage.setItem(STORAGE, JSON.stringify(history));
+      renderHistory();
+    } catch {
+      display.value = "Error";
+    }
+  }
+
+  /* ===== HISTORY ===== */
+  function renderHistory() {
+    historyList.innerHTML = "";
+    history.forEach(h => {
+      const d = document.createElement("div");
+      d.className = "history-item";
+      d.textContent = `${h.expr} = ${h.result}`;
+      d.onclick = () => display.value = h.expr;
+      historyList.appendChild(d);
+    });
+  }
+
+  function clearHistory() {
+    if (!confirm("Clear all history?")) return;
+    history = [];
+    localStorage.removeItem(STORAGE);
+    renderHistory();
+  }
+
+  /* ===== THEME ===== */
+  function toggleTheme() {
+    const body = document.body;
+    const next = body.dataset.theme === "dark" ? "light" : "dark";
+    body.dataset.theme = next;
+    localStorage.setItem(THEME, next);
+  }
+
+  document.body.dataset.theme = localStorage.getItem(THEME) || "light";
+
+  /* ===== KEYBOARD SUPPORT ===== */
+  document.addEventListener("keydown", (e) => {
+    const allowed = "0123456789+-*/().%";
+
+    if (allowed.includes(e.key)) {
+      append(e.key);
+      return;
+    }
+
+    if (e.key === "Enter") {
+      e.preventDefault();
+      calculate();
+      return;
+    }
+
+    if (e.key === "Backspace") {
+      backspace();
+      return;
+    }
+
+    if (e.key === "Escape") {
+      clearDisplay();
+      return;
+    }
+
+    // 🔥 CLEAR HISTORY (Ctrl + Shift + Delete)
+    if (e.ctrlKey && e.shiftKey && e.key === "Delete") {
+      clearHistory();
+      return;
+    }
+
+    // Scientific shortcuts
+    if (e.key === "s") append("Math.sin(");
+    if (e.key === "c") append("Math.cos(");
+    if (e.key === "t") append("Math.tan(");
+    if (e.key === "r") append("Math.sqrt(");
+    if (e.key === "p") append("Math.PI");
+  });
+
+  /* ===== INIT ===== */
+  // iOS / touch compatibility: ensure buttons act correctly on pointer events
+  document.querySelectorAll('button').forEach(b => b.type = 'button');
+
+  const keysEl = document.querySelector('.keys');
+  if (keysEl) {
+    // prevent duplicate activation: track last pointerup time and ignore the
+    // subsequent native click event that browsers sometimes synthesize.
+    let __lastPointerUp = 0;
+    document.addEventListener('click', (e) => {
+      if (!e.target) return;
+      const btn = e.target.closest('.keys button');
+      if (!btn) return;
+      if (Date.now() - __lastPointerUp < 600) {
+        e.stopImmediatePropagation();
+        e.preventDefault();
+        return;
+      }
+    }, true);
+    keysEl.addEventListener('pointerdown', (e) => {
+      const btn = e.target.closest('button');
+      if (!btn) return;
+      e.preventDefault();
+      btn.classList.add('pressed');
+    });
+
+    keysEl.addEventListener('pointerup', (e) => {
+      const btn = e.target.closest('button');
+      if (!btn) return;
+      e.preventDefault();
+      btn.classList.remove('pressed');
+      __lastPointerUp = Date.now();
+      if (typeof btn.onclick === 'function') {
+        btn.onclick.call(btn, e);
+      } else {
+        btn.click();
+      }
+    });
+
+    keysEl.addEventListener('pointercancel', (e) => {
+      const btn = e.target.closest('button');
+      if (btn) btn.classList.remove('pressed');
+    });
+  }
+
+  const historyActions = document.querySelector('.history-actions');
+  if (historyActions) {
+    historyActions.addEventListener('pointerup', (e) => {
+      const btn = e.target.closest('button');
+      if (!btn) return;
+      e.preventDefault();
+      __lastPointerUp = Date.now();
+      if (typeof btn.onclick === 'function') btn.onclick.call(btn, e); else btn.click();
+    });
+  }
+
+  renderHistory();
+
+  /* ===== HISTORY TOGGLE ===== */
+  const historyEl = document.querySelector('.history');
+  const historyToggle = document.getElementById('historyToggle');
+  function toggleHistory() {
+    if (!historyEl) return;
+    historyEl.classList.toggle('hidden');
+    if (historyEl.classList.contains('hidden')) {
+      historyToggle.textContent = 'History';
+    } else {
+      historyToggle.textContent = 'Hide History';
+    }
+  }
+
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("sw.js");
+  }
+</script>
+
+</body>
+</html>
