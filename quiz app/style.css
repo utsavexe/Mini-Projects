@@ -1,0 +1,362 @@
+:root{
+    --bg1:#0f172a;
+    --bg2:#0b3a66;
+    --accent:#7C5CF5;
+    --glass: rgba(255,255,255,0.06);
+    --card: rgba(255,255,255,0.06);
+    --muted: #cbd5e1;
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+    font-family: 'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, Arial;
+    margin:0;
+    min-height:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background: linear-gradient(135deg,var(--bg1),var(--bg2));
+    color:#e6eef8;
+}
+
+.page-bg{
+    position:fixed;inset:0;pointer-events:none;
+    background: radial-gradient(600px 300px at 10% 20%, rgba(124,92,245,0.12), transparent 8%),
+                            radial-gradient(500px 250px at 90% 80%, rgba(0,210,255,0.06), transparent 10%);
+    filter: blur(20px);
+}
+
+.quiz-wrapper{position:relative;z-index:2;max-width:760px;margin:24px;padding:24px;width:100%}
+.quiz-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.quiz-header h1{font-weight:600;margin:0;font-size:1.2rem;color:#fff}
+
+#progress{flex:1;margin-left:16px;height:8px;background:rgba(255,255,255,0.06);border-radius:999px;overflow:hidden}
+#progress .bar{height:100%;width:0%;background:linear-gradient(90deg,var(--accent),#00d2ff);transition:width 600ms cubic-bezier(.2,.9,.2,1)}
+
+.header-controls{display:flex;align-items:center;gap:10px;margin-right:12px}
+.timer{font-size:0.95rem;color:rgba(234,242,255,0.9);background:rgba(255,255,255,0.03);padding:6px 8px;border-radius:8px}
+.icon-btn{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted);padding:6px 10px;border-radius:8px;cursor:pointer}
+.theme-toggle{display:inline-flex;align-items:center;gap:8px;color:var(--muted)}
+.theme-toggle input{accent-color:var(--accent)}
+
+.quiz-container{
+    background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+    border-radius:16px;
+    padding:28px;
+    box-shadow: 0 12px 36px rgba(2,6,23,0.28), inset 0 1px 0 rgba(255,255,255,0.02);
+    backdrop-filter: blur(6px) saturate(1.05);
+    width:100%;
+    max-width:720px;
+}
+
+#question{font-size:1.15rem;margin:0 0 18px 0;color:#eaf2ff}
+
+.answers{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.answers .btn{
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border:1px solid rgba(255,255,255,0.04);
+    padding:0 20px;
+    height:56px;
+    line-height:56px;
+    border-radius:28px;
+    color:var(--muted);
+    cursor:pointer;
+    transition:transform 220ms ease, box-shadow 220ms ease, background 220ms ease;
+    font-weight:600;
+    font-size:1rem;
+    text-align:center;
+}
+.answers .btn:hover{transform:translateY(-4px);box-shadow:0 8px 20px rgba(0,0,0,0.35)}
+.answers .btn:disabled{opacity:.65;cursor:default;transform:none}
+
+.btn.correct{background:linear-gradient(90deg,#34d399,#10b981);color:#042014;border-color:transparent}
+.btn.wrong{background:linear-gradient(90deg,#fb7185,#f43f5e);color:#2b0b0b;border-color:transparent}
+
+.controls{display:flex;justify-content:flex-end;margin-top:18px}
+.next{background:linear-gradient(90deg,var(--accent),#00d2ff);border:none;color:#fff;padding:10px 16px;border-radius:10px;cursor:pointer;font-weight:600;box-shadow:0 8px 20px rgba(124,92,245,0.18);transition:transform 160ms ease}
+.next:active{transform:translateY(2px)}
+.next[style*="display: none"]{display:none}
+
+.quiz-footer{margin-top:14px;color:rgba(234,242,255,0.6);font-size:0.9rem;text-align:center}
+
+.fade-in{animation:fadeIn 420ms ease both}
+.pop{animation:pop 420ms cubic-bezier(.2,.8,.2,1) both}
+
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes pop{0%{transform:scale(.985)}60%{transform:scale(1.02)}100%{transform:scale(1)}}
+
+/* responsive */
+@media (max-width:520px){
+    .answers{grid-template-columns:1fr}
+    .quiz-wrapper{padding:12px}
+}
+
+/* modal */
+.modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:linear-gradient(rgba(2,6,23,0.6),rgba(2,6,23,0.6));z-index:40}
+.modal{pointer-events:auto}
+.modal[aria-hidden="false"]{display:flex}
+.modal-content{background:rgba(255,255,255,0.03);padding:18px;border-radius:12px;min-width:280px;max-width:560px;color:var(--muted);pointer-events:auto;z-index:60}
+
+/* Make modal content constrained and inner history list scrollable
+   so long history doesn't overflow the viewport and scrolling works. */
+.modal-content{
+    max-height:80vh; /* keep modal within viewport */
+    overflow: hidden; /* contain internal scrolling to the list */
+}
+
+/* Scrollable history list inside modal */
+.modal-content #history-list{
+    max-height: calc(80vh - 120px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-right: 8px; /* avoid scrollbar overlapping content */
+}
+.modal-content h3{margin-top:0;color:#fff}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
+
+.history-item{border-bottom:1px dashed rgba(255,255,255,0.04);padding:10px 0}
+.history-header{font-weight:600;margin-bottom:6px}
+.history-toggle{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted);padding:6px 8px;border-radius:8px;cursor:pointer;margin-bottom:8px}
+
+/* Ensure history list buttons are easily clickable and show pointer */
+.modal-content .history-toggle{cursor:pointer}
+.modal-content .history-item{pointer-events:auto}
+
+.history-details{display:none;padding:6px 0;max-height:40vh;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.history-details.open{display:block}
+.history-row{padding:8px 0;border-top:1px solid rgba(255,255,255,0.02)}
+.history-q{font-weight:600;margin-bottom:4px}
+.history-a{color:var(--muted)}
+.history-c{color:#7CFFB0}
+.history-a.correct{color:#7CFFB0;font-weight:600}
+.history-a.wrong{color:#ff8b8b;font-weight:600}
+.history-row{display:flex;flex-direction:column}
+
+/* Stronger, high-contrast history badges for purple theme */
+/* Purple-theme: avoid red/green — use purple/pink tones instead */
+body.purple .history-a.correct{color:#efe6ff;font-weight:700}
+body.purple .history-a.correct::before{content: "● ";color:#b592ff;margin-right:6px}
+body.purple .history-a.wrong{color:#fff0fb;font-weight:700}
+body.purple .history-a.wrong::before{content: "● ";color:#f2b8ff;margin-right:6px}
+
+/* Stronger badges for white theme as well */
+body.white .history-a.correct{color:#059669;font-weight:700}
+body.white .history-a.correct::before{content: "✓ ";color:#059669;margin-right:6px}
+body.white .history-a.wrong{color:#dc2626;font-weight:700}
+body.white .history-a.wrong::before{content: "✕ ";color:#dc2626;margin-right:6px}
+
+/* Strong, high-contrast chips inside modal so correctness shows clearly on all themes */
+.modal-content .history-a{
+    display:inline-block;
+    padding:6px 10px;
+    border-radius:8px;
+    margin:6px 0 0 0;
+}
+.modal-content .history-a.correct{
+    background: rgba(74,222,128,0.08);
+    color: #059669;
+}
+.modal-content .history-a.wrong{
+    background: rgba(255,107,107,0.08);
+    color: #b91c1c;
+}
+
+/* Make correct/incorrect chips slightly different on purple theme for more contrast
+   (use non-red/green colors so chips fit the purple aesthetic) */
+body.purple .modal-content .history-a.correct{
+    background: rgba(124,92,245,0.16);
+    color: #efe6ff;
+}
+body.purple .modal-content .history-a.wrong{
+    background: rgba(186,104,200,0.12);
+    color: #fff0fb;
+}
+
+/* Review highlight styles for answer pills */
+.answers .btn.review-correct{background:linear-gradient(90deg,#34d399,#10b981);color:#042014;border-color:transparent;box-shadow:none}
+.answers .btn.review-wrong{background:linear-gradient(90deg,#fb7185,#f43f5e);color:#2b0b0b;border-color:transparent;box-shadow:none}
+.answers .btn.review-selected{outline:3px solid rgba(255,200,200,0.08)}
+
+/* Android-style / Material-ish buttons + ripple */
+.btn.android{border-radius:28px;padding:12px 14px;box-shadow:0 6px 14px rgba(2,6,23,0.6)}
+.next.android{border-radius:20px}
+.ripple{position:absolute;border-radius:50%;transform:scale(0);animation:ripple 600ms linear;background:rgba(255,255,255,0.24)}
+@keyframes ripple{to{transform:scale(4);opacity:0}}
+
+/* White theme overrides (toggle) */
+body.white{
+    background:linear-gradient(160deg,#fafbfd 0%, #eef6ff 55%, #f5fbff 100%);
+    color:#0b1720
+}
+
+/* gentle decorative highlights for light background */
+body.white .page-bg{filter: blur(18px);background: radial-gradient(500px 220px at 8% 20%, rgba(124,92,245,0.06), transparent 10%), radial-gradient(420px 200px at 92% 80%, rgba(0,180,255,0.04), transparent 10%)}
+
+body.white .quiz-container{
+    background: linear-gradient(180deg,#ffffff,#fbfdff);
+    border-radius:16px;
+    color:#072235;
+    box-shadow: 0 18px 40px rgba(11,23,32,0.06), 0 2px 6px rgba(11,23,32,0.03);
+    border: 1px solid rgba(11,23,32,0.04);
+    padding:32px;
+    max-width:720px;
+}
+
+body.white #question{color:#072235;font-weight:600}
+
+/* answer buttons - soft glass with subtle inner shadow */
+body.white .answers .btn{
+    background: linear-gradient(180deg,#ffffff,#fbfdff);
+    border:1px solid rgba(11,23,32,0.04);
+    color:#0b1720;
+    box-shadow: 0 12px 24px rgba(11,23,32,0.06), inset 0 1px 0 rgba(255,255,255,0.7);
+}
+body.white .answers .btn:hover{transform:translateY(-4px);box-shadow:0 22px 38px rgba(11,23,32,0.08)}
+body.white .answers .btn:focus{outline:2px solid rgba(124,92,245,0.15);outline-offset:3px}
+
+/* next / primary button in light theme */
+body.white .next{
+    background: linear-gradient(90deg,#7C5CF5,#00B4FF);
+    color: #fff;
+    border: none;
+    box-shadow: 0 14px 40px rgba(124,92,245,0.12);
+}
+
+body.white .quiz-footer{color:rgba(6,25,46,0.55)}
+body.white .timer{background:rgba(2,6,23,0.02);color:#072235;border-radius:8px;padding:6px 10px}
+
+body.white #progress{background:rgba(11,23,32,0.03)}
+body.white #progress .bar{background:linear-gradient(90deg,#7C5CF5,#00B4FF)}
+
+/* modal tweaks for white */
+body.white .modal{background:rgba(250,250,252,0.7)}
+body.white .modal-content{background:#fff;color:#072235;border:1px solid rgba(11,23,32,0.03);box-shadow:0 18px 40px rgba(11,23,32,0.06)}
+
+/* subtle finer typography spacing for white layout */
+body.white .quiz-wrapper{max-width:820px;padding:32px}
+body.white .answers{gap:14px}
+
+/* Purple theme (like uploaded image) */
+body.purple{
+    background: linear-gradient(180deg,#0f0730 0%, #2a0f55 60%, #2d0d4c 100%);
+    color: #f2f6ff;
+}
+
+body.purple .page-bg{filter: blur(10px);background: radial-gradient(420px 180px at 10% 15%, rgba(124,92,245,0.12), transparent 10%), radial-gradient(360px 160px at 90% 85%, rgba(0,180,255,0.04), transparent 10%)}
+
+body.purple .quiz-container{
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border-radius: 18px;
+    color: #f8fbff;
+    max-width:720px;
+    padding:28px 28px;
+    box-shadow: 0 20px 60px rgba(6,3,20,0.7), inset 0 1px 0 rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.03);
+}
+
+body.purple #question{color:#eaf2ff;font-weight:700}
+
+/* white pill answers like image */
+body.purple .answers .btn{
+    background: #ffffff;
+    color: #2b2140;
+    border: none;
+    height:56px;
+    border-radius:28px;
+    box-shadow: 0 14px 30px rgba(17,8,30,0.45), inset 0 1px 0 rgba(255,255,255,0.9);
+    font-weight:600;
+    font-size:1rem;
+}
+body.purple .answers .btn:hover{transform:translateY(-2px);box-shadow:0 20px 40px rgba(17,8,30,0.55)}
+body.purple .answers .btn:disabled{opacity:0.7}
+
+body.purple .next{
+    background: linear-gradient(90deg,#6e4cf0,#2bb8ff);
+    color: #fff;
+    box-shadow:0 14px 30px rgba(100,60,180,0.2);
+}
+
+body.purple .timer{background:rgba(255,255,255,0.03);color:#eaf2ff}
+body.purple .quiz-footer{color:rgba(234,242,255,0.6)}
+
+/* Ensure correct/wrong result colors take precedence in all themes
+   (purple theme previously set white pill buttons which had equal or
+   higher specificity and masked .btn.correct/.btn.wrong). */
+/* Use selectors with higher specificity and place them after theme rules. */
+.answers .btn.correct,
+body.purple .answers .btn.correct {
+    background: linear-gradient(90deg,#34d399,#10b981);
+    color: #042014;
+    border-color: transparent;
+    box-shadow: none;
+}
+
+.answers .btn.wrong,
+body.purple .answers .btn.wrong {
+    background: linear-gradient(90deg,#fb7185,#f43f5e);
+    color: #2b0b0b;
+    border-color: transparent;
+    box-shadow: none;
+}
+
+/* Also ensure review-specific classes (used in review flow) are not overridden */
+.answers .btn.review-correct,
+body.purple .answers .btn.review-correct {
+    background: linear-gradient(90deg,#34d399,#10b981) !important;
+    color: #042014 !important;
+    border-color: transparent !important;
+    box-shadow: none !important;
+}
+
+.answers .btn.review-wrong,
+body.purple .answers .btn.review-wrong {
+    background: linear-gradient(90deg,#fb7185,#f43f5e) !important;
+    color: #2b0b0b !important;
+    border-color: transparent !important;
+    box-shadow: none !important;
+}
+
+/* History button / toggle cursor and interaction improvements */
+#history-btn.icon-btn,
+.history-toggle {
+    cursor: pointer;
+    transition: transform 140ms ease, box-shadow 140ms ease, background 140ms ease;
+}
+
+#history-btn.icon-btn:hover,
+.history-toggle:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 22px rgba(2,6,23,0.28);
+}
+
+#history-btn.icon-btn:active,
+.history-toggle:active { transform: translateY(0); }
+
+#history-btn.icon-btn:focus,
+.history-toggle:focus {
+    outline: 3px solid rgba(124,92,245,0.18);
+    outline-offset: 4px;
+}
+
+body.purple .modal{background:rgba(6,4,20,0.7)}
+body.purple .modal-content{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));color:var(--muted)}
+
+/* closer spacing and sizing to match screenshot */
+.quiz-wrapper{display:flex;flex-direction:column;align-items:center}
+.quiz-header{width:100%;display:flex;align-items:center;gap:12px}
+.quiz-header h1{margin-right:8px}
+#progress{flex:1;height:10px;border-radius:999px}
+
+.quiz-container{max-width:720px}
+
+.answers .btn{height:52px;padding:0 20px;border-radius:28px;font-size:0.95rem}
+.answers .btn span{display:inline-block}
+
+.controls{align-items:center}
+
+/* focus styles */
+.answers .btn:focus{outline:3px solid rgba(124,92,245,0.12);outline-offset:4px}
+
+/* ensure next button sits inside controls aligned right like screenshot */
+.controls{min-width:120px;display:flex;justify-content:flex-end}

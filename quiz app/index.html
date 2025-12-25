@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1">
+        <title>Quiz App</title>
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="page-bg"></div>
+
+<div class="quiz-wrapper">
+    <header class="quiz-header">
+        <h1>Quick Quiz</h1>
+        <div class="header-controls">
+            <div class="timer" id="timer">⏱ 00:15</div>
+            <button id="history-btn" class="icon-btn">History</button>
+            <label class="theme-toggle">
+                <input type="checkbox" id="theme-switch">
+                <span>Purple</span>
+            </label>
+        </div>
+
+        <div id="progress" aria-hidden="true">
+            <div class="bar" id="progress-bar"></div>
+        </div>
+    </header>
+
+    <main class="quiz-container">
+        <h2 id="question">Question text</h2>
+
+        <div id="answers" class="answers" role="group" aria-labelledby="question"></div>
+
+        <div class="controls">
+            <button id="next-btn" class="next">Next</button>
+        </div>
+    </main>
+
+    <footer class="quiz-footer">Good luck — enjoy the quiz ✨</footer>
+</div>
+
+<!-- History modal -->
+<div id="history-modal" class="modal" aria-hidden="true">
+    <div class="modal-content">
+        <h3>Score History</h3>
+        <div id="history-list">No history yet.</div>
+        <div class="modal-actions">
+            <button id="clear-history" class="next">Clear</button>
+            <button id="close-history" class="next">Close</button>
+        </div>
+    </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
