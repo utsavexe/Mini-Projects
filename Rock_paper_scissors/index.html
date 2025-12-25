@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rock Paper Scissors</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <button id="themeToggle">🌙</button>
+
+  <main class="card">
+    <h1>Choose Your Move</h1>
+
+    <div class="choices">
+      <button class="choice" data-choice="rock">
+        <span>✊</span>
+        <p>Rock</p>
+      </button>
+      <button class="choice" data-choice="paper">
+        <span>✋</span>
+        <p>Paper</p>
+      </button>
+      <button class="choice" data-choice="scissors">
+        <span>✌</span>
+        <p>Scissors</p>
+      </button>
+    </div>
+
+    <div class="status">
+      <div id="computer">Computer: —</div>
+      <div id="result">Make your move</div>
+    </div>
+
+    <div class="score">
+      <span>Player: <b id="playerScore">0</b></span>
+      <span>Computer: <b id="computerScore">0</b></span>
+    </div>
+  </main>
+
+  <audio id="clickSound" src="sounds/click.mp3"></audio>
+  <audio id="winSound" src="sounds/win.mp3"></audio>
+  <audio id="loseSound" src="sounds/lose.mp3"></audio>
+
+  <script src="script.js"></script>
+</body>
+</html>
