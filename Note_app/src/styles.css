@@ -1,0 +1,164 @@
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+  background: #f4f6f8;
+}
+
+body.dark {
+  background: #111;
+}
+
+.app {
+  width: 90%;
+  max-width: 1100px;
+  margin: 2rem auto;
+  padding: 1.5rem 2rem;
+  background: white;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+body.dark .app {
+  background: #1e1e1e;
+  color: white;
+}
+
+.dark {
+  background: #111;
+  color: white;
+}
+
+input,
+textarea {
+  width: 100%;
+  margin-bottom: 0.5rem;
+  padding: 0.5rem;
+}
+
+textarea {
+  min-height: 160px;
+  resize: vertical; /* allow vertical only */
+}
+
+/* Hide browser resizer handle (the small triangle / blue circle) */
+textarea::-webkit-resizer {
+  display: none;
+}
+
+button {
+  margin-right: 0.5rem;
+}
+
+ul {
+  padding: 0;
+}
+
+li {
+  list-style: none;
+  background: #eee;
+  margin-bottom: 0.5rem;
+  padding: 0.5rem;
+}
+
+.dark li {
+  background: #222;
+}
+
+.pinned {
+  border-left: 5px solid gold;
+  background: #fff8dc;
+}
+
+body.dark .pinned {
+  background: #2a2a00;
+}
+
+.tags {
+  font-size: 0.8rem;
+  opacity: 0.8;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.search {
+  width: 260px;
+  padding: 0.5rem 0.75rem;
+  transition: all 0.3s ease;
+}
+
+.search:focus {
+  transform: scale(1.03);
+}
+.tags-input {
+  width: 50%;
+}
+.history-toggle {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+button {
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+button:hover {
+  transform: translateY(-2px);
+  opacity: 0.9;
+}
+li {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+li:hover {
+  transform: scale(1.01);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+body.dark input,
+body.dark textarea {
+  background: #2a2a2a;
+  color: white;
+  border: 1px solid #444;
+}
+
+/* Pin button sizing */
+.pin-btn {
+  font-size: 14px;
+  padding: 4px 8px;
+}
+
+/* Empty message styling */
+.empty {
+  margin-top: 1rem;
+  color: #ddd;
+}
+
+/* Tweak notes list spacing */
+.notes-list {
+  margin-top: 1rem;
+  padding: 0;
+}
+
+/* Slightly larger container on bigger screens */
+@media (min-width: 1400px) {
+  .app {
+    max-width: 1300px;
+  }
+}
+/* Empty state message */
+.empty {
+  margin-top: 12px;
+  font-size: 14px;
+  color: #444;          /* ✅ visible in light mode */
+}
+
+/* Dark mode override */
+body.dark .empty {
+  color: #ccc;          /* ✅ visible in dark mode */
+}
