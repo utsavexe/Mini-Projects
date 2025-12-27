@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>QR Code Reader</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#020617">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main>
+    <h1>QR Code Reader</h1>
+
+    <video id="video" playsinline></video>
+    <div id="scanSuccess" class="scan-success">✔</div>
+
+    <div class="controls">
+      <button id="start">Start Camera</button>
+      <button id="stop">Stop Camera</button>
+      <input type="file" id="fileInput" accept="image/*" />
+    </div>
+    <button id="installBtn" hidden>Install App</button>
+    <p class="result">
+      Result: <span id="result">None</span>
+    </p>
+    <h3>History</h3>
+    <ul id="history"></ul>
+    <button id="clearHistory">Clear History</button>
+  </main>
+
+  <script type="module" src="app.js"></script>
+  <audio id="beep" src="https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg" preload="auto"></audio>
+
+</body>
+</html>
