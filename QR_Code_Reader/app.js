@@ -54,20 +54,39 @@ if (isIOS) {
   enableImageFallback();
 }
 
+// Ensure video is muted and set to playsinline for iOS Safari autoplay/getUserMedia
+video.muted = true;
+video.playsInline = true;
+video.setAttribute("playsinline", "");
+video.setAttribute("muted", "");
+
+const isStandalone = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
+if (isStandalone && isIOS) {
+  // iOS Home Screen (standalone) webapps do not support getUserMedia
+  showResult("Opened from Home Screen: iOS standalone web apps cannot access the camera. Open this page in Safari instead.");
+  enableImageFallback();
+}
+
 startBtn.onclick = async () => {
   try {
     if (scanner) return;
 
+    // Prefer back-facing camera when available
     scanner = new QrScanner(
       video,
       result => showResult(result.data),
-      { highlightScanRegion: true }
+      { highlightScanRegion: true, preferredCamera: "environment" }
     );
 
     await scanner.start();
   } catch (err) {
     console.error(err);
-    showResult("Camera access failed. Please upload an image.");
+    // Provide actionable guidance for iOS users
+    if (isIOS && (err.name === 'NotAllowedError' || err.name === 'SecurityError')) {
+      showResult('Camera access denied. Open this page in Safari, allow Camera access in Settings, and avoid Home Screen installs or Private mode.');
+    } else {
+      showResult("Camera access failed. Please upload an image.");
+    }
     enableImageFallback();
   }
 };
