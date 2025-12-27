@@ -75,6 +75,18 @@ Only http / https://qr-codereader.netlify.app URLs auto-open
 No backend, no data leaves device
 History stored locally in browser
 
+---
+
+## 📱 iOS / iPhone Troubleshooting
+
+- **Open in Safari (not Home Screen):** If you installed the app to the Home Screen (standalone mode), iOS does not provide camera access to webapps. Open the page directly in Safari.
+- **Allow Camera Access:** When prompted, allow Camera access. If you denied it previously go to Settings → Safari → Camera and set to `Allow`.
+- **Avoid Private Mode:** Safari Private (Incognito) may block camera access. Use a normal browsing window.
+- **HTTPS Required:** The page must be served over HTTPS (GitHub Pages, Netlify, or Vercel). GitHub Pages uses HTTPS by default.
+- **If camera still fails:** Use the image upload fallback ("Choose file") to scan saved QR images.
+
+If you want, I can update the UI to show a clearer iOS-specific help banner when the camera fails.
+
 📄 License
 MIT License — free to use, modify, and distribute.
 
