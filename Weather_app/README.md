@@ -6,7 +6,7 @@ The app supports city search, current location weather, hourly forecast, and dar
 🚀 Live Demo
 
 🔗 GitHub Pages Link:
-https://utsavexe.github.io/Weather_app/
+https://utsavexe.github.io/Mini-Projects/Weather_app/
 
 📸 Features
 
@@ -75,4 +75,5 @@ This project is open source and free to use for learning and educational purpose
 
 🙌 Author
 Utsav Gupta
+
 📌 BCA | Web Development | JavaScript Projects
