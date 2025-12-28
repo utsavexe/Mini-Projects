@@ -1,0 +1,89 @@
+:root {
+  --bg: #f4f4f4;
+  --card: #ffffff;
+  --text: #000;
+}
+
+.dark {
+  --bg: #121212;
+  --card: #1e1e1e;
+  --text: #fff;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.app {
+  background: var(--card);
+  width: 340px;
+  padding: 20px;
+  border-radius: 15px;
+  text-align: center;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.search {
+  display: flex;
+  margin: 10px 0;
+}
+
+.search input {
+  flex: 1;
+  padding: 10px;
+}
+
+.search button {
+  padding: 10px;
+  background: #4a90e2;
+  color: white;
+  border: none;
+}
+
+.location-btn {
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 8px;
+}
+
+.weather img {
+  width: 90px;
+}
+
+.details {
+  display: flex;
+  justify-content: space-between;
+}
+
+.hourly {
+  display: flex;
+  overflow-x: auto;
+  margin-top: 10px;
+}
+
+.hour {
+  min-width: 70px;
+  padding: 5px;
+}
+
+#error {
+  color: red;
+  margin-top: 8px;
+}
